@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(AuthRoles),
       default: "USER",  
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     forgetPasswordToken: String,
     forgetPasswordExpiry: Date,
   },
