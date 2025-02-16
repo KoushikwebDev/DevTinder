@@ -3,10 +3,9 @@ const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/sendResponse");
 const CustomError = require("../utils/customError");
 const sendCommonResponse = require("../utils/sendCommonResponse");
-const { default: AuthRoles } = require("../utils/authRoles");
+const AuthRoles = require("../utils/authRoles");
 
-// signup
-
+//* signup
 exports.signup = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, gender } = req.body;
 
@@ -32,7 +31,7 @@ exports.signup = asyncHandler(async (req, res) => {
   sendResponse(newUser, res);
 });
 
-// feed
+//* get feed
 exports.feed = asyncHandler(async (req, res) => {
   // const user = User.find({ isDeleted: false, role: AuthRoles.USER });
   const users = await User.aggregate([
@@ -43,3 +42,47 @@ exports.feed = asyncHandler(async (req, res) => {
 
   sendCommonResponse(users, res);
 });
+
+//? login
+exports.login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new CustomError("Email and Password are required", 400);
+  }
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user) {
+    throw new CustomError("Invalid email or password", 400);
+  }
+  const isValidatedPassword = await user.isValidatedPassword(password);
+
+  if (!isValidatedPassword) {
+    throw new CustomError("Invalid email or password", 400);
+  }
+  sendResponse(user, res);
+});
+
+//? get user profile 
+exports.userProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id);
+
+  if(!user){
+    throw new CustomError("User not found", 404);
+  };
+
+  sendCommonResponse(user, res);
+});
+
+//? update user profile
+exports.logout = asyncHandler(async (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: 200,
+    success: true,
+    message: "Logout successfully",
+  });
+})

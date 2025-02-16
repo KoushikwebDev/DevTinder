@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 const crypto = require("crypto");
 const config = require("../config/index");
-const { default: AuthRoles } = require("../utils/authRoles");
+const AuthRoles = require("../utils/authRoles");
 
 const userSchema = new mongoose.Schema(
   {

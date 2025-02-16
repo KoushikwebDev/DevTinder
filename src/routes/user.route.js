@@ -1,7 +1,8 @@
 const express = require("express");
 const Router = express.Router();
 
-const { signup, feed } = require("../controllers/user.controller");
+const { signup, feed, login, userProfile, logout } = require("../controllers/user.controller");
+const isLoggedIn = require("../middlewares/auth.middleware");
 
 /**
  * @swagger
@@ -153,5 +154,14 @@ Router.post("/signup", signup);
  *         description: Server error.
  */
 Router.get("/feed", feed);
+
+
+Router.post("/login", login);
+
+Router.get("/getProfile", isLoggedIn, userProfile);
+
+Router.get("/logout", logout);
+
+
 
 module.exports = Router;
